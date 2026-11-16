@@ -7,15 +7,15 @@ public partial class ContratacaoHospedagem : ContentPage
     App PropriedadesApp;
 
     public ContratacaoHospedagem()
-	{
-		InitializeComponent();
+    {
+        InitializeComponent();
 
         PropriedadesApp = (App)Application.Current;
 
         pck_quarto.ItemsSource = PropriedadesApp.lista_quartos;
 
         dtpck_checkin.MinimumDate = DateTime.Now;
-        dtpck_checkin.MaximumDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month + 1, DateTime.Now.Day);
+        dtpck_checkin.MaximumDate = DateTime.Now.AddMonths(1);
 
         dtpck_checkout.MinimumDate = dtpck_checkin.Date.AddDays(1);
         dtpck_checkout.MaximumDate = dtpck_checkin.Date.AddMonths(6);
@@ -25,6 +25,12 @@ public partial class ContratacaoHospedagem : ContentPage
     {
         try
         {
+            if (pck_quarto.SelectedItem == null)
+            {
+                await DisplayAlert("Atenção", "Selecione uma suíte antes de avançar.", "OK");
+                return;
+            }
+
             Hospedagem h = new Hospedagem
             {
                 QuartoSelecionado = (Quarto)pck_quarto.SelectedItem,
@@ -38,12 +44,16 @@ public partial class ContratacaoHospedagem : ContentPage
             {
                 BindingContext = h
             });
-
         }
         catch (Exception ex)
         {
             await DisplayAlert("Ops", ex.Message, "OK");
         }
+    }
+
+    private async void Sobre_Clicked(object sender, EventArgs e)
+    {
+        await Navigation.PushAsync(new Sobre());
     }
 
     private void dtpck_checkin_DateSelected(object sender, DateChangedEventArgs e)
